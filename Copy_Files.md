@@ -1,5 +1,5 @@
-## Bash file to copy only latest files from source to destination.
----
+## Bash Script to copy only latest files from source to destination.
+
 **Practical Use Case Scenario:**
 - Only files with the string 'report' in the filename should be copied from source to destination.
 - Update the destination file only if it's older than the source file. Don't rewrite every time.
