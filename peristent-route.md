@@ -214,10 +214,10 @@ $ ip route show
 or
 
 ```bash
-route -n
+$ route -n
 ```
 or
 
 ```bash
-netstat -r
+$ netstat -r
 ```
