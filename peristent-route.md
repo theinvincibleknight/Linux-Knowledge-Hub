@@ -211,3 +211,13 @@ You can confirm your routes have been added by issuing the following command:
 ```bash
 $ ip route show 
 ```
+or
+
+```bash
+route -n
+```
+or
+
+```bash
+netstat -r
+```
