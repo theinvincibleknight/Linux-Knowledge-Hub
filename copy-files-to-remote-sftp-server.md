@@ -6,23 +6,23 @@
 - **Local Directory:** /sftpusers/chroot/sftp-dev-dir/bills
 
 **Remote SFTP Server**
-- **Server IP:** 45.114.76.82
+- **Server IP:** 47.118.76.93
 - **Custom Port:** 3333
 - **Username:** taj_uat
-- **Password:** t@J@Ka$@$fTp425
+- **Password:** t@J@Mba$@$fTp786
 - **Remote Directory:** /interface/bills/IN
 
 This script uses the `sftp` command to connect to the remote server and upload the specified files from a local directory to a remote directory. It also uses the sftp batch mode to automate the process without requiring user interaction.
 
-In this example, password of SFTP folder **`(t@J@Ka$@$fTp425)`** contains special character such as `"$"`. The shell is interpreting the `"$"` characters in the password string as the start of a variable name. You can try escaping the special characters with a backslash `(\)`.
+In this example, password of SFTP folder **`(t@J@Mba$@$fTp786)`** contains special character such as `"$"`. The shell is interpreting the `"$"` characters in the password string as the start of a variable name. You can try escaping the special characters with a backslash `(\)`.
 
 ```bash
 #!/bin/bash
 
-HOST='45.114.76.82'
+HOST='47.118.76.93'
 PORT='3333'
 USER='taj_uat'
-PASSWORD='t@J@Ka\$@\$fTp425' 
+PASSWORD='t@J@Mba\$@\$fTp786'
 REMOTE_DIR='/interface/bills/IN'
 LOCAL_DIR='/sftpusers/chroot/sftp-dev-dir/bills'
 
