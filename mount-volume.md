@@ -206,7 +206,7 @@ If you are unsure how to correct errors in `/etc/fstab` and you created a backup
 ```bash
 root@ip-172-31-45-53:/# root@ip-172-31-45-53:/# umount /dev/xvdf
 ```
-## Provide ownership and permissions for a non-root user
+## [Optional] Provide ownership and permissions for a non-root user
 
 To provide ownership and permissions for a non-root user to access a specific folder in Ubuntu, you can follow these steps:
 
