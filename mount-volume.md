@@ -180,7 +180,7 @@ root@ip-172-31-45-53:/# vi /etc/fstab
 
 - Add the following entry to `/etc/fstab` to mount the device at the specified mount point. The fields are the UUID value returned by `blkid` (or `lsblk` for Ubuntu 18.04), the mount point, the file system, and the recommended file system mount options.
 
-In the following example, we mount the device with UUID `96d52fb1-7798-4482-9400-430e977ebe92` to mount point `/newvolume` and we use the `ext4` file system. We also use the defaults and nofail flags. We specify 0 to prevent the file system from being dumped, and we specify 2 to indicate that it is a non-root device.
+In the following example, we mount the device with UUID `96d52fb1-7798-4482-9400-430e977ebe92` to mount point `/newvolume` and we use the `ext4` file system. We also use the defaults and nofail flags. We specify 0 to prevent the file system from being dumped, and we specify 2 to indicate that it is a another device.
 
 ```bash
 UUID=96d52fb1-7798-4482-9400-430e977ebe92  /newvolume  ext4  defaults,nofail  0  2
@@ -206,3 +206,40 @@ If you are unsure how to correct errors in `/etc/fstab` and you created a backup
 ```bash
 root@ip-172-31-45-53:/# root@ip-172-31-45-53:/# umount /dev/xvdf
 ```
+## Provide ownership and permissions for a non-root user
+
+To provide ownership and permissions for a non-root user to access a specific folder in Ubuntu, you can follow these steps:
+
+1. **Identify the Folder:**
+
+Make sure you know the exact path of the folder you want to grant access to. For this example, let's assume the folder is located at `/path/to/folder`.
+
+2. **Change Ownership:**
+
+Use the `chown` command to change the ownership of the folder to the non-root user. Replace username with the actual `username` of the non-root user:
+
+```bash
+sudo chown username:username /path/to/folder
+```
+
+3. **Grant Read and Execute Permissions:**
+
+To grant the non-root user read and execute permissions on the folder, use the `chmod` command:
+
+```bash
+sudo chmod +rx /path/to/folder
+```
+
+This command adds read and execute permissions to the folder for the owner, group, and others.
+
+4. **Verify Permissions:**
+
+You can verify that the permissions and ownership have been set correctly using the `ls` command:
+
+```bash
+ls -l /path/to/folder
+```
+
+The output will show the permissions, ownership, and other information.
+
+Now, the non-root user should have ownership of the folder and be able to access its contents. They will also have read and execute permissions on the folder. If the folder contains files that the user needs to modify, you might need to adjust permissions accordingly.
