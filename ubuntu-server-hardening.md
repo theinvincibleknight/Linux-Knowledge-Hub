@@ -545,5 +545,5 @@ If an account is locked, the output would typically show "L" or "LK" in place of
 
 8.	**Check Logs:** Monitor the system logs for any relevant error messages. The logs can provide insights into what might be causing the issue. Check `/var/log/auth.log` or similar files for authentication-related information.
 
-**Reboot:** In some cases, a reboot might help apply PAM changes and clear any issues that might be causing unexpected behavior.
+9. **Reboot:** In some cases, a reboot might help apply PAM changes and clear any issues that might be causing unexpected behavior.
 
