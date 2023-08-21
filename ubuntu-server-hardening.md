@@ -547,3 +547,550 @@ If an account is locked, the output would typically show "L" or "LK" in place of
 
 9. **Reboot:** In some cases, a reboot might help apply PAM changes and clear any issues that might be causing unexpected behavior.
 
+## Enabling Automatic Logouts
+
+Set an environment variable `TMOUT` with a value of 300 seconds (2 minutes), and then make it readonly to ensure that it cannot be changed during the user's session. This method applies to all users on the system using the bash shell.
+
+Here's a summary of the steps to enable automatic logouts after 300 seconds using /etc/profile:
+
+1.	Open a terminal or connect to your Ubuntu machine via SSH.
+
+2.	As the root user or using `sudo`, edit the `/etc/profile` file with a text editor:
+
+```bash
+sudo nano /etc/profile
+```
+
+3.	Add the following lines at the end of the file:
+
+```bash
+export TMOUT=300
+readonly TMOUT
+```
+
+4.	Save the file and exit the text editor.
+
+5.	The changes will take effect the next time users log in or start a new shell session. After 300 seconds of inactivity, the shell will automatically log out the user.
+
+Please note that this method will only work for users who use the bash shell. If your system uses a different shell for some users, you may need to set `TMOUT` in the respective shell configuration file (e.g.,` ~/.bashrc` for individual users) or apply a different approach based on the shell in use.
+
+## Disallowing Root Access
+
+Disabling direct root access in Ubuntu is a crucial security practice. Here are the steps to disallow root access:
+
+1. **Create a Non-Root User:**
+
+If you haven't already, create a non-root user with administrative privileges. This user will be used to perform administrative tasks using the `sudo` command.
+
+```bash
+sudo adduser yourusername
+sudo usermod -aG sudo yourusername
+```
+
+Replace `yourusername` with the desired username.
+
+2. **Ensure Password Authentication for SSH:**
+
+Make sure password authentication is enabled for SSH. Open the SSH configuration file:
+
+```bash
+sudo nano /etc/ssh/sshd_config
+```
+
+Find the line that says `PasswordAuthentication` and make sure it's set to `yes`:
+
+```bash
+PasswordAuthentication yes
+```
+
+Save the file and restart the SSH service:
+
+```bash
+sudo systemctl restart ssh
+```
+
+3. **Test Non-Root User Access:**
+
+Logout from the server and try logging in using the non-root user:
+
+```bash
+ssh yourusername@server_ip
+```
+
+You should be able to log in using the password of the non-root user.
+
+4. **Disable Direct Root Login:**
+
+Open the SSH configuration file again:
+
+```bash
+sudo nano /etc/ssh/sshd_config
+```
+
+Find the line that says `PermitRootLogin` and change it to:
+
+```bash
+PermitRootLogin no
+```
+
+Save the file and restart the SSH service:
+
+```bash
+sudo systemctl restart ssh
+```
+
+This prevents the root user from logging in directly via SSH.
+
+5. **Use `sudo` for Administrative Tasks:**
+
+Whenever you need to perform administrative tasks, use the `sudo` command followed by the command you want to run with elevated privileges:
+
+```bash
+sudo command_to_run
+```
+
+You'll be prompted to enter the password of the non-root user.
+
+6. **Ensure Key-Based Authentication (Optional):**
+
+For even stronger security, set up key-based authentication and disable password authentication. This prevents unauthorized access even more effectively.
+
+7. **Regularly Update and Monitor:**
+
+Keep your system updated with security patches, monitor system logs for any unusual activity, and maintain good security practices.
+
+## **Securing LDAP**
+
+LDAP stands for Lightweight Directory Access Protocol. It's an open and widely-used protocol for accessing and maintaining directory information services over a network. In the context of Ubuntu and other Linux-based systems, LDAP is often used as a centralized authentication and directory service to manage user accounts, groups, and other network-related information.
+
+Securing LDAP (Lightweight Directory Access Protocol) involves several steps to ensure the confidentiality, integrity, and availability of the directory service. Below are steps you can follow to secure LDAP on an Ubuntu system:
+
+1.	**Install LDAP Server** (if not already installed):
+
+If you haven't installed an LDAP server yet, you can choose from various LDAP server implementations such as OpenLDAP. Here's how to install OpenLDAP:
+
+```bash
+sudo apt-get update
+sudo apt-get install slapd ldap-utils
+```
+
+2.	**Configure TLS/SSL Encryption:**
+
+Transport Layer Security (TLS) or Secure Sockets Layer (SSL) encryption ensures that data transmitted between the LDAP client and server is secure.
+
+•	During the installation of OpenLDAP, you will be prompted to configure TLS. Follow the prompts to set up a certificate.
+
+•	If you need to configure TLS later, you can do so using the `dpkg-reconfigure` command:
+
+```bash
+sudo dpkg-reconfigure slapd
+```
+
+3.	**Restrict Access with Access Control Lists (ACLs):**
+
+Define access control rules to restrict who can access and modify data in the LDAP directory. ACLs are configured in the LDAP directory itself.
+
+•	The ACL configuration is typically found in the `cn=config` subtree.
+•	You can use the `ldapmodify` tool to add or modify ACLs.
+
+4.	**Use Strong Password Policies:**
+
+Implement strong password policies to ensure that user passwords meet complexity requirements and are regularly updated.
+
+•	Configure password policies in your LDAP server's configuration. In OpenLDAP, you can use the `ppolicy` overlay.
+
+5.	**Regularly Monitor Logs:**
+
+Regularly review LDAP server logs to detect and respond to any suspicious or unauthorized activities.
+
+6.	**Backup and Disaster Recovery:**
+
+Implement a regular backup strategy for your LDAP data to ensure data recovery in case of failures.
+
+7.	**Regularly Update and Patch:**
+
+Keep your operating system and LDAP server software up to date with the latest security patches.
+
+8.	**Network Security:**
+
+Implement firewall rules to control which systems can access the LDAP server.
+If your LDAP server is publicly accessible, consider using a Virtual Private Network (VPN) or other secure methods to access it.
+
+9.	**Implement Intrusion Detection/Prevention Systems (IDS/IPS):**
+
+Utilize IDS/IPS solutions to monitor network traffic and detect potential attacks on your LDAP server.
+
+10.	**Authentication and Authorization:**
+
+Use LDAP for authentication and authorization purposes. Configure applications and services to authenticate users against your LDAP directory.
+
+Remember that securing LDAP is an ongoing process. It's important to continuously monitor, review, and update your security measures to stay protected against emerging threats. If you're not experienced with LDAP, consider seeking assistance from professionals or resources dedicated to LDAP security best practices.
+
+## Securing NFS Mount
+
+Securing NFS (Network File System) mounts is essential to prevent unauthorized access and protect your data. Here's how you can secure NFS mounts on an Ubuntu system:
+
+1. **Use NFSv4:**
+
+NFSv4 offers improved security features compared to older versions. Whenever possible, use NFSv4 for your mounts.
+
+2. **Configure /etc/exports:**
+
+Open the `/etc/exports` file using a text editor with root privileges:
+
+```bash
+sudo nano /etc/exports
+```
+
+Define your NFS exports with appropriate options. You can specify options like `ro` (read-only), `no_root_squash` (allows root access), and `no_subtree_check` (disables subtree checking):
+
+```bash
+/path/to/shared/folder   client_ip(options)
+```
+
+- For example:
+
+```bash
+/data   192.168.1.100(rw,sync,no_subtree_check)
+```
+
+Save the file.
+
+3. **Apply Changes:**
+
+After editing `/etc/exports`, apply the changes using the following command:
+
+```bash
+sudo exportfs -a
+```
+
+4. **Firewall Configuration:**
+
+If you're using a firewall, you need to allow the necessary ports for NFS. NFSv4 requires both TCP and UDP ports 2049, and optional ports 20048 (mountd) and 2048 (status).
+
+For example, using `ufw`:
+
+```bash
+sudo ufw allow proto tcp from client_ip to any port 2049
+sudo ufw allow proto udp from client_ip to any port 2049
+```
+
+5. **Secure the NFS Server:**
+
+Limit access to the NFS server using host-based restrictions in `/etc/hosts.allow` and `/etc/hosts.deny`.
+
+In `/etc/hosts.allow`, allow specific clients:
+
+```bash
+nfs: client_ip
+```
+
+In `/etc/hosts.deny`, deny all other clients:
+
+```bash
+nfs: ALL
+```
+
+6. **Enable Kerberos Authentication (Optional):**
+
+If security is a top concern, consider enabling Kerberos authentication for NFS. This adds an extra layer of authentication and encryption.
+
+7. **Regularly Monitor and Update:**
+
+Regularly monitor logs for any unauthorized access attempts. Keep your system updated with the latest security patches.
+
+8. **Testing and Verification:**
+
+Test the NFS mounts from the client side to ensure they are accessible as expected.
+
+## Securing the Apache HTTP Server
+
+In Ubuntu, the process of securing the Apache HTTP Server (Apache2) is quite similar to other Linux distributions, with a few differences in file locations and package names. Here's how you can achieve the same steps on Ubuntu:
+
+1.	**Change Ownership and Permissions:**
+
+If you want to ensure that only the root user has write permissions to a directory containing scripts or CGIs, follow these commands:
+
+```bash
+sudo chown root:<your_group> /path/to/directory
+sudo chmod 755 /path/to/directory
+```
+
+Replace `<your_group>` with the appropriate group name if you want to assign a specific group ownership. The `chmod 755` command sets the permissions to allow read, write, and execute for the owner (root), and read and execute for others.
+
+2.	**Configure Apache:**
+
+The Apache configuration files on Ubuntu are located in the `/etc/apache2/` directory. The main configuration file is `apache2.conf`. You can configure Apache options there or in separate files located in the `/etc/apache2/conf-available/` and `/etc/apache2/conf-enabled/` directories.
+
+You can use a text editor like `nano` or `vim` to edit these files:
+
+```bash
+sudo nano /etc/apache2/apache2.conf
+```
+
+3.	**Apply Appropriate Options:**
+
+Inside the Apache configuration files, you can specify various options related to security and other settings. These options can include settings for Directory access, Script execution, CGI execution, and more. The specific options you need to set will depend on your configuration and security requirements.
+
+For example, you might use directives like `Options`, `Require`, `Allow`, and `Deny` within the `<Directory>` sections to control access to specific directories.
+
+For instance, you could have something like:
+
+```
+<Directory /path/to/directory>
+    Options -Indexes +FollowSymLinks
+    AllowOverride None
+    Require all denied
+</Directory>
+```
+
+This configuration denies all access to the specified directory. You can modify these directives to suit your needs.
+
+4.	**Restart Apache:**
+
+After making changes to the Apache configuration, you need to restart the Apache service for the changes to take effect:
+
+```bash
+sudo service apache2 restart
+```
+
+Remember that securing a web server involves a comprehensive approach, including firewall settings, regular updates, monitoring, and more. Always ensure you have a backup and thoroughly test any changes to avoid accidental disruptions.
+
+## TLS Settings
+
+On Ubuntu, the Apache HTTP Server configuration is split into multiple files stored in the `/etc/apache2/` directory. The specific file to configure SSL settings is typically `/etc/apache2/sites-available/default-ssl.conf` or `/etc/apache2/sites-available/default-ssl`.
+
+Here's how you can enable TLSv1.2 and configure SSL settings on Ubuntu:
+
+1.	Open the appropriate SSL configuration file for editing. You'll likely need administrative privileges to edit this file, so use `sudo` or `root` access:
+
+```bash
+sudo nano /etc/apache2/sites-available/default-ssl.conf
+```
+
+2.	Inside the SSL configuration file, look for the `<VirtualHost>` block that contains the SSL settings. Look for the `SSLEngine on` directive, and below it, you can add the SSLProtocol directive to enable TLSv1.2 and disable older protocols:
+
+```
+<IfModule mod_ssl.c>
+  <VirtualHost _default_:443>
+    # Existing SSL configuration lines...
+    SSLEngine on
+
+    # Add the SSLProtocol directive to enable TLSv1.2 and disable older protocols
+    SSLProtocol -All +TLSv1.2
+
+    # Other SSL settings...
+  </VirtualHost>
+</IfModule>
+```
+
+Save the changes and exit the text editor (in nano, press `Ctrl + O`, then `Enter`, and `Ctrl + X`).
+
+3.	After making changes to the configuration, it's essential to check the syntax for errors:
+
+```bash
+sudo apachectl configtest
+```
+
+If the output says "Syntax OK," your configuration changes are valid.
+
+4.	If you modified the default-ssl.conf file, you need to enable the SSL site and restart Apache:
+
+```bash
+sudo a2ensite default-ssl
+sudo systemctl restart apache2
+```
+
+Alternatively, if you have a different site configuration file specifically for SSL (e.g., `my-ssl-site.conf`), enable that site instead.
+
+## Cipher Suites
+
+To configure the SSLCipherSuite in Ubuntu's Apache HTTP Server, you can follow these steps:
+
+1.	Open the `httpd-ssl.conf` file for editing. You'll likely need administrative privileges to edit this file, so use `sudo` or `root` access:
+
+```bash
+sudo nano /etc/apache2/sites-available/default-ssl.conf
+```
+4
+2.	Inside the `httpd-ssl.conf` file, locate the `<VirtualHost>` block that contains the SSL settings. Look for the `SSLEngine on` directive, and below it, add the SSLCipherSuite directive with the appropriate cipher suites:
+
+```
+<IfModule mod_ssl.c>
+  <VirtualHost _default_:443>
+    # Existing SSL configuration lines...
+    SSLEngine on
+
+    # Add the SSLCipherSuite directive with the desired cipher suites
+    SSLCipherSuite ECDHE-RSA-AES128-GCM-SHA256:ECDHE-ECDSA-AES128-GCM-SHA256:ECDHE-RSA-AES256-GCM-SHA384:ECDHE-ECDSA-AES256-GCM-SHA384:DHE-RSA-AES128-GCM-SHA256:DHE-DSS-AES128-GCM-SHA256:kEDH+AESGCM:ECDHE-RSA-AES128-SHA256:ECDHE-ECDSA-AES128-SHA256:DHE-RSA-AES128-GCM-SHA256:DHE-DSS-AES128-GCM-SHA256:kEDH+AESGCM:ECDHE-RSA-AES128-SHA256:ECDHE-ECDSA-AES128-SHA256:ECDHE-RSA-AES128-SHA:ECDHE-ECDSA-AES128-SHA:ECDHE-RSA-AES256-SHA384:ECDHE-ECDSA-AES256-SHA384:ECDHE-RSA-AES256
+
+    # Other SSL settings...
+  </VirtualHost>
+</IfModule>
+```
+
+Save the changes and exit the text editor (in nano, press `Ctrl + O`, then `Enter`, and `Ctrl + X`).
+
+3.	After making changes to the configuration, it's essential to check the syntax for errors:
+
+```bash
+sudo apachectl configtest
+```
+
+If the output says "Syntax OK," your configuration changes are valid.
+
+4.	If you modified the `default-ssl.conf` file, you need to enable the SSL site and restart Apache:
+
+```bash
+sudo a2ensite default-ssl
+sudo systemctl restart apache2
+```
+
+Alternatively, if you have a different site configuration file specifically for SSL (e.g., my-ssl-site.conf), enable that site instead.
+
+## Disable Cross Site Scripting 
+
+To apply the specific HTTP response headers for disabling Cross-Site Scripting (XSS) and enhancing security, you can use the following steps:
+
+1.	Open the default configuration file for Apache, `apache2.conf`, for editing. You'll likely need administrative privileges to edit this file, so use `sudo` or `root` access:
+
+```bash
+sudo nano /etc/apache2/apache2.conf
+```
+
+2.	Inside the `apache2.conf` file, look for the `<Directory>` section that corresponds to the web root directory (`/var/www/html` by default).
+
+If you didn't find a specific `<Directory /var/www/html>` section inside the `apache2.conf` file, you have a couple of options for adding the HTTP response headers.
+
+**Option 1:** Add Headers to Existing `<Directory /var/www/>` Section
+You can add the HTTP response headers directly inside it. You can apply these headers to the entire `/var/www/` directory, including its subdirectories, and any files served from that directory will have the specified headers:
+
+```
+<Directory /var/www/>
+    # Add the following lines to set the desired HTTP response headers
+    Header always set X-XSS-Protection "1; mode=block"
+    Header always set X-Content-Type-Options "nosniff"
+    Header always append X-Frame-Options "SAMEORIGIN"
+
+    # Other configurations for the /var/www/ directory...
+</Directory>
+```
+
+**Option 2:** Create a New `<Directory /var/www/html>` Section
+If you prefer to apply the headers only to the `/var/www/html` directory specifically, you can create a new `<Directory>` section for it:
+
+```
+<Directory /var/www/html>
+    # Add the following lines to set the desired HTTP response headers
+    Header always set X-XSS-Protection "1; mode=block"
+    Header always set X-Content-Type-Options "nosniff"
+    Header always append X-Frame-Options "SAMEORIGIN"
+</Directory>
+```
+
+> **Note:** Both options should work, but the choice depends on whether you want the headers to apply to the entire `/var/www/` directory or just the `/var/www/html/` directory. If you want the headers to apply only to the HTML directory, create the new section. Otherwise, add them to the existing `<Directory /var/www/>` section.
+
+After making the necessary changes, save the `apache2.conf` file, and check the syntax for errors:
+
+```bash
+sudo apachectl configtest
+```
+
+If you get following error in syntax:
+
+Invalid command 'Header', perhaps misspelled or defined by a module not included in the server configuration
+Action 'configtest' failed.
+
+Follow below steps to resolve:
+The `Header` directive is provided by the `mod_headers` module in Apache. This module allows you to manipulate HTTP request and response headers.
+
+To resolve this issue and use the `Header` directive in your Apache configuration, you need to ensure that the `mod_headers` module is loaded and enabled. Follow these steps to enable the `mod_headers` module on Ubuntu:
+
+1.	Enable the `mod_headers` module:
+
+```bash
+sudo a2enmod headers
+```
+
+2.	Restart Apache to apply the changes:
+
+```bash
+sudo systemctl restart apache2
+```
+
+Now, the `mod_headers` module should be loaded, and the `Header` directive should work without any errors. You can verify the configuration again using:
+
+```bash
+sudo apachectl configtest
+```
+
+3.	If there are no syntax errors, Apache will show "Syntax OK," and your configuration is valid, restart Apache to apply the changes:
+
+```bash
+sudo systemctl restart apache2
+```
+## Transport Policies
+
+To apply the specified transport policies in Ubuntu's Apache HTTP Server, you can follow these steps:
+
+1.	Open the default configuration file for Apache, `apache2.conf`, for editing. You'll likely need administrative privileges to edit this file, so use `sudo` or `root` access:
+
+```bash
+sudo nano /etc/apache2/apache2.conf
+```
+
+2.	Inside the `apache2.conf` file, locate the `<Directory>` section that corresponds to the web root directory (`/var/www/html` by default). If you cannot find it, you can add it at the end of the file:
+
+```
+# Other configurations...
+
+<Directory /var/www/html>
+    # Add the following lines to set the desired transport policies
+    FileETag None
+    TraceEnable off
+    Header always set Strict-Transport-Security "max-age=31536000; includeSubDomains"
+    Header always set X-permitted-Cross-Domain-Policies "master-only"
+    Header set Cache-Control "no-cache, no-store, must-revalidate"
+    Header set Pragma "no-cache"
+
+    # Other configurations for the web root directory...
+</Directory>
+
+# Add TraceEnable directive here
+TraceEnable off
+
+# More configurations...
+```
+
+> **Note:** The `TraceEnable` directive is a server-level configuration, not specific to a particular directory. It should be placed in the main server configuration file (`apache2.conf` or `httpd.conf`) or in an appropriate global context, outside of any `<Directory>` or `<VirtualHost>` blocks.
+
+Save the changes and exit the text editor (in nano, press `Ctrl + O`, then `Enter`, and `Ctrl + X`).
+
+3.	After making changes to the configuration, it's essential to check the syntax for errors:
+
+```bash
+sudo apachectl configtest
+```
+
+If the output says "Syntax OK," your configuration changes are valid.
+
+4.	If you modified the `apache2.conf` file, you need to restart Apache for the changes to take effect:
+
+```bash
+sudo systemctl restart apache2
+```
+
+By adding these transport policies to your Apache configuration, you enhance the security and control how the server handles certain aspects of HTTP responses:
+
+- `FileETag None`: This disables ETags, which are used for cache validation. By setting `None`, you prevent the disclosure of file metadata in ETags.
+
+- `TraceEnable off`: This disables the TRACE method, which could be used in cross-site tracing attacks.
+
+- `Strict-Transport-Security`: This header tells the browser to enforce HTTPS for the specified duration (`max-age`). It also includes subdomains (`includeSubDomains`) in the enforcement.
+
+- `X-permitted-Cross-Domain-Policies`: This header specifies the permitted cross-domain policies for Adobe Flash and Acrobat. By setting it to `"master-only"`, you only allow the site's master policy.
+
+- `Cache-Control`, `Pragma`: These headers instruct the browser and proxies to not cache the response, ensuring that clients always request fresh content from the server.
+
+Make sure to apply these policies in the appropriate context and directories within your Apache configuration to suit your security requirements.
+
