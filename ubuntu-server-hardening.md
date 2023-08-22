@@ -1094,3 +1094,490 @@ By adding these transport policies to your Apache configuration, you enhance the
 
 Make sure to apply these policies in the appropriate context and directories within your Apache configuration to suit your security requirements.
 
+
+## Cryptographic Login
+
+Cryptographic Login will enhance the security of your SSH connections. 
+
+1. **Enable Cryptographic Key-Based Authentication:**
+
+Open the SSH configuration file for editing:
+
+```bash
+sudo nano /etc/ssh/sshd_config
+```
+
+Locate the `PubkeyAuthentication` directive and ensure it's set to `yes`:
+
+```bash
+PubkeyAuthentication yes
+```
+
+Save the file and exit the text editor.
+
+2. **Disable Password-Based Authentication:**
+
+Still in the same `/etc/ssh/sshd_config` file, find the `PasswordAuthentication` directive and set it to `no`:
+
+```bash
+PasswordAuthentication no
+```
+This ensures that users cannot log in using passwords.
+
+3. **Reload SSH Configuration:**
+
+After making these changes, you need to reload the SSH service for the changes to take effect:
+
+```bash
+sudo systemctl reload ssh
+```
+
+Now, users will only be able to authenticate using cryptographic keys. Keep in mind that before disabling password authentication, you should ensure that you have set up SSH key-based authentication for all the users who need access.
+
+This configuration significantly improves the security of your SSH connections, as cryptographic keys are more secure than passwords and less susceptible to common attacks like brute force attempts.
+
+## Protocol Version for SSH
+
+SSH (Secure Shell) supports several protocol versions, each introducing different features and security enhancements. The most commonly used SSH protocol versions are SSH-1 and SSH-2.
+
+1. **SSH-1:**
+
+SSH-1 was the first version of the SSH protocol, introduced in the 1990s. It provided a secure replacement for insecure remote login protocols like Telnet and rsh (remote shell). However, SSH-1 had several security flaws, and it is considered obsolete and insecure. It is no longer recommended or widely used due to its vulnerabilities.
+
+2. **SSH-2:**
+
+SSH-2 is the modern and widely adopted version of the SSH protocol. It addressed the security weaknesses of SSH-1 and introduced several improvements, including enhanced encryption algorithms, stronger authentication methods, and support for additional security features like port forwarding, X11 forwarding, and file transfer (SCP and SFTP). SSH-2 is the version used by default in modern SSH implementations.
+
+SSH-2 is backward compatible, meaning it can communicate with older SSH-1 servers, but most modern SSH clients and servers default to using SSH-2. SSH-1 is rarely used today due to its inherent security risks.
+
+When you connect to an SSH server, the client and server negotiate the highest compatible protocol version they both support. Typically, the SSH clients and servers in use today will use SSH-2, but it's essential to keep your SSH software up-to-date to benefit from the latest security features and improvements.
+
+For security reasons, it's crucial to disable SSH-1 support on SSH servers, and many modern SSH server configurations have SSH-1 support disabled by default.
+
+To check the protocol version used by your SSH client, you can use the `-V` option:
+
+```bash
+ssh -V
+```
+
+To check the protocol version supported by an SSH server, you can inspect the server's SSH configuration file (usually located at `/etc/ssh/sshd_config`) and look for the following line:
+
+```bash
+Protocol 2
+```
+
+The "Protocol 2" line in the SSH server configuration indicates that the server supports SSH-2, and SSH-1 is disabled.
+
+Or you can run the following command to list the lines containing "Protocol" in the `sshd_config` file:
+
+```bash
+root@ubuntu-hardening:/# cat /etc/ssh/sshd_config | grep -i "protocol"
+```
+
+If you are unable to find the "Protocol 2" line in the `sshd_config` file, it likely means that the configuration is using the default value, which is equivalent to supporting "SSH-2" and disabling "SSH-1".
+
+In the absence of the "Protocol" line in the `sshd_config file`, OpenSSH (the most commonly used SSH server implementation) assumes the default value of supporting only "SSH-2" and disabling "SSH-1".
+
+## Disabling Source Routing
+
+To implement the security measures you've mentioned on an Ubuntu server, follow these steps:
+
+1.	**Disabling Source Routing:**
+
+Add the following lines to the `/etc/sysctl.conf` file to drop packets with Strict Source Routing (SSR) and Loose Source Routing (LSR) options set:
+
+```bash
+# Drop packets with SSR and LSR options set
+net.ipv4.conf.all.accept_source_route = 0
+net.ipv6.conf.all.accept_source_route = 0
+```
+
+After adding these lines, apply the changes using the `sysctl` command:
+
+```bash
+sudo sysctl -p
+```
+
+This will disable the acceptance of packets with source routing options.
+
+2.	**Disabling Packet Forwarding:**
+
+To disable forwarding of IPv4 and IPv6 packets on all interfaces, you can add the following lines to the `/etc/sysctl.conf file`:
+
+```bash
+# Disable packet forwarding
+net.ipv4.ip_forward = 0
+net.ipv6.conf.all.forwarding = 0
+```
+
+Apply the changes using the `sysctl` command:
+
+```bash
+sudo sysctl -p
+```
+
+This will disable packet forwarding on your system.
+
+3.	**Disabling Multicast Packets:**
+
+To disable forwarding of all multicast packets on all interfaces, you can add the following lines to the `/etc/sysctl.conf` file:
+
+```bash
+# Disable forwarding of multicast packets
+net.ipv4.conf.all.mc_forwarding = 0
+net.ipv6.conf.all.mc_forwarding = 0
+```
+
+Apply the changes using the `sysctl` command:
+
+```bash
+sudo sysctl -p
+```
+
+This will disable the forwarding of multicast packets on all interfaces.
+
+These changes will help improve the security of your server by disabling source routing, packet forwarding, and multicast packet forwarding. Make sure to thoroughly test your server after applying these changes to ensure that there are no unintended consequences.
+
+**Errors:**
+
+```bash
+# Error1
+sysctl: cannot stat /proc/sys/net/ipv6/conf/all/accept_source_route: No such file or directory
+```
+
+If you are not using IPv6 on your server or if you have it disabled, you can safely ignore this error. The absence of the `/proc/sys/net/ipv6/conf/all/accept_source_route` file simply means that the IPv6 settings related to source routing are not applicable on your system.
+
+```bash
+# Error2
+sysctl: setting key "net.ipv4.conf.all.mc_forwarding": No such file or directory
+```
+
+Multicast forwarding is typically related to routers and systems acting as routers. If your system is not functioning as a router and is not involved in multicast routing, you can safely ignore this error.
+
+## Disable IPv6
+
+In Ubuntu, the steps to disable IPv6 are slightly different from those in other Linux distributions. Follow these steps to disable IPv6 in Ubuntu:
+
+Open the sysctl.conf file for editing:
+
+```bash
+sudo nano /etc/sysctl.conf
+```
+
+Add the following lines to disable IPv6:
+
+```bash
+# Disable IPv6
+net.ipv6.conf.all.disable_ipv6 = 1
+net.ipv6.conf.default.disable_ipv6 = 1
+```
+
+Save the changes and exit the text editor.
+
+Apply the sysctl settings to the current session:
+
+```bash
+sudo sysctl -p
+```
+
+To disable IPv6 in network interfaces, you can add the following line to the `/etc/sysctl.conf` file as well:
+
+```bash
+# Disable IPv6 for all interfaces
+net.ipv6.conf.all.disable_ipv6 = 1
+```
+
+Restart the network service:
+
+```bash
+sudo service networking restart
+```
+
+To disable IPv6 in the GRUB configuration, open the GRUB default file for editing:
+
+```bash
+sudo nano /etc/default/grub
+```
+
+Find the line starting with `GRUB_CMDLINE_LINUX`, and add `ipv6.disable=1` to the existing parameters, ensuring they are separated by spaces. For example:
+
+```bash
+GRUB_CMDLINE_LINUX="ipv6.disable=1 quiet splash"
+```
+
+Save the changes and exit the text editor.
+
+Update the GRUB configuration:
+
+```bash
+sudo update-grub
+```
+
+Reboot your system:
+
+```bash
+sudo reboot
+```
+
+## Enable System Auditing
+
+Ubuntu uses `auditd`, but the configuration and service management commands are adapted to Ubuntu's package management system (`systemd`). Here are the steps to enable and configure the auditd service in Ubuntu:
+
+1.	**Install auditd** (if not already installed):
+
+```bash
+sudo apt-get update
+sudo apt-get install auditd
+```
+
+2.	**Configure auditd:**
+
+The configuration file for `auditd` in Ubuntu is `/etc/audit/auditd.conf`. You can edit this file to configure the parameters according to your requirements. Use a text editor like `nano` or `vim`:
+
+```bash
+sudo nano /etc/audit/auditd.conf
+```
+
+Here are some common parameters you might want to configure:
+
+- `log_file`: Set the log file location.
+- `max_log_file`: Set the maximum log file size in MB.
+- `max_log_file_action`: Define the action to take when the maximum log file size is reached (e.g., `rotate`, `keep_logs`).
+- `space_left`: Set the threshold for disk space usage.
+- `space_left_action`: Define the action to take when disk space runs low.
+- `admin_space_left`: Set the threshold for administrative space usage.
+
+Make your desired changes and save the file.
+
+3.	**Start and Enable the auditd Service:**
+
+Start the auditd service:
+
+```bash
+sudo service auditd start
+```
+
+Enable auditd to start at boot:
+
+```bash
+sudo systemctl enable auditd
+```
+
+This will ensure that the auditd service is automatically started when the system boots up.
+
+4.	**Verify auditd Status:**
+
+You can check the status of the auditd service:
+
+```bash
+sudo service auditd status
+```
+
+This will show you whether the service is active and running.
+
+Please note that while the general steps are provided here, the specific parameters you configure in `/etc/audit/auditd.conf` will depend on your auditing requirements and security policies.
+
+Also, the `auditd` service primarily records system-related events for auditing purposes. To audit user-level events and actions, you may need to configure additional audit rules. You can do this using the `auditctl` command. For more advanced auditing configurations, consider referring to official documentation or seeking guidance from experienced administrators or security experts.
+
+## Audit Rules
+
+To configure audit rules in Ubuntu using the `/etc/audit/audit.rules` file and the `/etc/audit/rules.d/` directory, you can follow these steps:
+
+1.	**Understanding Rule Groups:**
+
+The `/etc/audit/audit.rules` file and the `/etc/audit/rules.d/` directory are used to define different sets of audit rules. These rules specify what events to monitor and log. The numbers preceding the rule filenames indicate the priority and grouping of the rules.
+
+- `10`: Kernel and auditctl configuration
+- `20`: Rules that could match general rules but you want a different match
+- `30`: Main rules
+- `40`: Optional rules
+- `50`: Server-specific rules
+- `70`: System local rules
+- `90`: Finalize (immutable)
+
+2.	**Configuring Audit Rules:**
+
+To add audit rules, follow these general steps:
+
+• Open the desired rule file for editing using a text editor like `nano` or `vim`. For example, to edit the main audit rules:
+
+```bash
+sudo nano /etc/audit/rules.d/30-main.rules
+```
+
+• Add your audit rules to the file. Audit rules are specified in a format like:
+
+```bash
+-a always,exit -F arch=b64 -S open,creat,truncate,ftruncate,openat,open_by_handle_at -F exit=-EACCES -k access
+```
+
+This rule example logs attempts to access files that result in permission denied errors.
+
+• Save the file.
+
+3.	**Applying Rules:**
+
+After editing the rule files, you need to reload the audit configuration to apply the changes:
+
+```bash
+sudo service auditd reload
+```
+
+This will read the rule files and apply the new configurations.
+
+4.	**Viewing Rules:**
+
+You can use the `auditctl` command to view currently loaded audit rules:
+
+```bash
+sudo auditctl -l
+```
+
+This will show the rules that are currently in effect.
+
+Remember that configuring audit rules requires understanding the specific events you want to monitor and log. It's recommended to consult with security experts or references on audit rules to ensure you're setting up effective and relevant rules. Keep in mind that incorrect audit rule configurations can lead to excessive logging or missed security events.
+
+Here are some example rules for each of the rule groups:
+
+1.	**10: Kernel and auditctl configuration:**
+
+These rules are typically used to configure global audit settings and set up initial monitoring.
+
+•	Enable auditd startup at boot:
+
+```bash
+# /etc/audit/rules.d/10-configuration.rules
+-e 2
+```
+
+•	Set auditd backlog limit:
+
+```bash
+# /etc/audit/rules.d/10-configuration.rules
+-b 8192
+```
+
+2.	**20: Rules that could match general rules but you want a different match:**
+
+These rules are used when you want specific rules to take precedence over more general rules.
+
+•	Log failed login attempts (preferably using a system-specific rule):
+
+```bash
+# /etc/audit/rules.d/20-specific-login.rules
+-a always,exit -F arch=b64 -S sethostname -F success=0 -k login-failure
+```
+
+3.	30: Main rules:
+
+These rules capture the core events you want to monitor. Note that these examples are basic; you might want to expand them based on your needs.
+
+•	Monitor file read and write actions:
+
+```bash
+# /etc/audit/rules.d/30-file-access.rules
+-a always,exit -F arch=b64 -S open,creat,truncate,ftruncate,openat,open_by_handle_at -k file-access
+```
+
+•	Monitor changes to system administration files:
+
+```bash
+# /etc/audit/rules.d/30-admin-files.rules
+-a always,exit -F arch=b64 -S chmod,chown,chgrp,fchmod,fchown,fchownat -k admin-file-change
+```
+
+4.	**40: Optional rules:**
+
+These rules can include additional events you consider important to monitor, but not critical.
+
+•	Monitor changes to network configuration:
+
+```bash
+# /etc/audit/rules.d/40-network.rules
+-a always,exit -F arch=b64 -S sethostname,setdomainname -k network-change
+```
+
+5.	**50: Server-specific rules:**
+
+These rules can be tailored to your server's specific requirements and services.
+
+•	Monitor changes to web server configuration files:
+
+```bash
+# /etc/audit/rules.d/50-web-server.rules
+-a always,exit -F arch=b64 -S chmod,chown,chgrp,fchmod,fchown,fchownat -F path=/etc/nginx/* -k web-config-change
+```
+
+6.	**70: System local rules:**
+
+These rules focus on local system actions that might be relevant to your environment.
+
+•	Monitor changes to user and group information:
+
+```bash
+# /etc/audit/rules.d/70-user-group.rules
+-a always,exit -F arch=b64 -S useradd,usermod,userdel,groupadd,groupmod,groupdel -k user-group-change
+```
+
+7.	**90: Finalize (immutable):**
+
+These rules are meant to enforce immutability on the audit configuration itself.
+
+•	Lock the audit configuration to prevent changes:
+
+```bash
+# /etc/audit/rules.d/90-finalize.rules
+-e 2
+-a always,exit -F arch=b64 -S auditctl -F success=0 -k audit-config-change
+```
+
+Remember that these are just examples, and you should tailor them to your environment's specific requirements. After adding or modifying rules, always reload the audit rules using `sudo service auditd reload` for the changes to take effect. Additionally, monitor the audit logs to ensure that the configured rules are capturing the desired events.
+
+## NTP
+
+To add NTP (Network Time Protocol) on an Ubuntu instance, you can follow these steps to install and configure the NTP service:
+
+Update the package list to ensure you have the latest available packages and install the NTP package:
+
+```bash
+sudo apt update
+sudo apt install ntp
+```
+
+Once the installation is complete, the NTP service will start automatically. You can verify its status using the following command:
+
+```bash
+sudo systemctl status ntp
+```
+
+By default, the NTP service will automatically synchronize the system time with NTP servers from the pool.ntp.org project. The configuration file for NTP is located at `/etc/ntp.conf`.
+
+(Optional) If you need to modify the NTP configuration, you can edit the `/etc/ntp.conf` file with a text editor like `nano` or `vi`:
+
+```bash
+sudo nano /etc/ntp.conf
+```
+
+In the configuration file, you can specify the NTP servers you want to use for time synchronization. By default, the pool.ntp.org servers are already included. If you need to use specific NTP servers, you can replace or add them like this:
+
+```bash
+server your_ntp_server_1
+server your_ntp_server_2
+```
+
+Replace `your_ntp_server_1` and `your_ntp_server_2` with the addresses or hostnames of the NTP servers you want to use. Make sure to leave a blank line at the end of the file.
+
+After making changes to the configuration, save the file and restart the NTP service:
+
+```bash
+sudo systemctl restart ntp
+```
+
+Check the status of the NTP service again to ensure it is running correctly:
+
+```bash
+sudo systemctl status ntp
+```
+
+The NTP service will now automatically synchronize the system time with the configured NTP servers, ensuring that your Ubuntu instance has accurate timekeeping. This is essential for various system processes, log management, and applications that rely on synchronized time across the network.
+
