@@ -549,7 +549,7 @@ If an account is locked, the output would typically show "L" or "LK" in place of
 
 ## Enabling Automatic Logouts
 
-Set an environment variable `TMOUT` with a value of 300 seconds (2 minutes), and then make it readonly to ensure that it cannot be changed during the user's session. This method applies to all users on the system using the bash shell.
+Set an environment variable `TMOUT` with a value of 300 seconds (5 minutes), and then make it readonly to ensure that it cannot be changed during the user's session. This method applies to all users on the system using the bash shell.
 
 Here's a summary of the steps to enable automatic logouts after 300 seconds using /etc/profile:
 
