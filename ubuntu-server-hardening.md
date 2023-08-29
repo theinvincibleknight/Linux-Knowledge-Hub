@@ -1581,3 +1581,24 @@ sudo systemctl status ntp
 
 The NTP service will now automatically synchronize the system time with the configured NTP servers, ensuring that your Ubuntu instance has accurate timekeeping. This is essential for various system processes, log management, and applications that rely on synchronized time across the network.
 
+**Example bash script to install and configure NTP**
+```bash
+#!/bin/bash
+
+# Install NTP
+sudo apt-get update
+sudo apt-get install -y ntp
+
+# Backup the original ntp.conf file
+sudo cp /etc/ntp.conf /etc/ntp.conf.bak
+
+# Configure NTP servers
+echo "server samay1.nic.in iburst" | sudo tee -a /etc/ntp.conf
+echo "server samay2.nic.in iburst" | sudo tee -a /etc/ntp.conf
+
+# Restart NTP service
+sudo systemctl restart ntp
+
+# Display NTP server status
+ntpq -p
+```
