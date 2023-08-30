@@ -259,7 +259,8 @@ sudo clamscan -r --move=<path-to-destination> <path-to-infected-file-directory>
 ```bash
 sudo clamscan -r --remove=yes <path-to-infected-file-directory>
 ```
-Output:
+**Output:**
+
 ```bash
 /home/ubuntu/testfile.txt: Eicar-Signature FOUND
 /home/ubuntu/testfile.txt: Removed.
