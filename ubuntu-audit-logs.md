@@ -196,7 +196,7 @@ sudo systemctl restart auditd
 
 3. **Log Compression:** Older log files that are rotated may be compressed to save disk space. Compressed log files have extensions like `.gz` (e.g., `audit.log.1.gz`). The compression helps reduce storage space usage.
 
-If you need to change the default log retention settings, you can modify the /etc/audit/auditd.conf file to adjust the max_log_file and num_logs values to suit your needs. After making changes, you may need to restart the auditd service for the new settings to take effect.
+If you need to change the default log retention settings, you can modify the `/etc/audit/auditd.conf` file to adjust the max_log_file and num_logs values to suit your needs. After making changes, you may need to restart the auditd service for the new settings to take effect.
 
 </blockquote>
 
