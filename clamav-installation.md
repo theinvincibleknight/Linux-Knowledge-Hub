@@ -12,12 +12,12 @@ sudo apt install clamav-daemon
 ```
 
 ## Updating ClamAV Virus Database:
-After installing CLAMAV, it's important to update its virus definition database to ensure it can detect the latest threats:
+You don't have to run (`sudo freshclam`) manually as it will be running automatically after installing CLAMAV.
 
 ```bash
 sudo freshclam
 ```
-`Freshclam` is a tool specifically designed for this task. Simply calling it on the command line will update the database.
+`Freshclam` is a tool specifically designed for this task. Simply calling it on the command line will update the database. It's important to update its virus definition database to ensure it can detect the latest threats.
 
 ### **Errors:**
 
