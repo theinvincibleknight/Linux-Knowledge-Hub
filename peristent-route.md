@@ -9,7 +9,7 @@ When you need to access network devices located on a different network segment t
 You need to add routes to your server using the below commands.
 
 ```bash
-$ sudo ip route add 20.0.140.21 dev ens5 scope link
+$ sudo ip route add 20.0.140.21 dev ens5 scope link metric 100
 $ sudo ip route add 151.193.250.41 via 20.0.140.21 dev ens5
 ```
 
