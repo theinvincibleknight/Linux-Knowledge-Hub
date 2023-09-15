@@ -276,6 +276,41 @@ history
 
 This command sets the `HISTTIMEFORMAT` variable to the desired timestamp format (Year-Month-Day Hour:Minute:Second) and then displays the command history with timestamps.
 
+[Optional] To set date and time format to command history, open your Bash configuration file in a text editor. This is typically `~/.bashrc` for individual users or `/etc/bash.bashrc` for system-wide configuration. Use the appropriate file based on your needs:
+
+For the current user:
+
+```bash
+nano ~/.bashrc
+```
+
+For the system-wide configuration (requires root privileges):
+
+```bash
+sudo nano /etc/bash.bashrc
+```
+Add the following lines at the end of the file to set the `HISTTIMEFORMAT` environment variable:
+
+```bash
+# Set the timestamp format for command history
+export HISTTIMEFORMAT="%F %T "
+```
+This configuration sets the timestamp format to **"YYYY-MM-DD HH:MM:SS"**.
+
+Save the file and exit the text editor.
+
+To apply the changes to your current session, either close and reopen your terminal or run:
+
+```bash
+source ~/.bashrc   # For individual user configuration
+```
+or
+
+```bash
+source /etc/bash.bashrc   # For system-wide configuration
+```
+Now, when you view your shell history using the `history` command, it will display each command with the timestamp of when it was executed.
+
 ## 4. Searching the History:
 You can use the `grep` command along with the `HISTTIMEFORMAT` setting to search for specific commands or patterns within the history:
 
