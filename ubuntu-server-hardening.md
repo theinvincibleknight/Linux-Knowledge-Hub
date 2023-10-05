@@ -307,6 +307,14 @@ This allows read access to all users but only root can modify the file.
 
 ## Forcing Strong Passwords:
 
+Enforce users to change password every 30 days or less
+
+```bash
+$ sudo vi /etc/login.defs
+...
+PASS_MAX_DAYS   30
+```
+
 To enforce a strong password policy in Ubuntu, you can use the libpwquality library and the pam_pwquality PAM module (Pluggable Authentication Modules). This will allow you to set requirements such as minimum password length, minimum character classes, and check for character sequences and consecutive characters.
 
 To enforce strong password policies through the PAM configuration, follow these steps:
@@ -315,7 +323,7 @@ To enforce strong password policies through the PAM configuration, follow these 
 
 ```bash
 sudo apt update
-sudo apt install libpwquality-tools
+sudo apt -y install libpam-pwquality cracklib-runtime
 ```
 
 2.	**Backup PAM Configuration Files:**
@@ -343,10 +351,23 @@ Locate the line that contains `password requisite pam_pwquality.so` and comment 
 Then, add the following lines at the end of the file to enforce the desired password complexity requirements:
 
 ```
-password requisite pam_pwquality.so retry=3 minlen=8 minclass=4 maxsequence=3 maxrepeat=3
+password requisite pam_pwquality.so retry=3 minlen=8 maxrepeat=3 ucredit=-1 lcredit=-1 dcredit=-1 ocredit=-1 difok=3 gecoscheck=1 reject_username enforce_for_root
 ```
 
 Save and close the file.
+
+Options used:
+
+- retry=3: Prompt a user 3 times before returning with error.
+- minlen=8 : The `password length` cannot be less than this parameter
+- maxrepeat=3: Allow a maximum of `3 repeated` characters
+- ucredit=-1 : Require at least one `uppercase` character
+- lcredit=-1 : Must have at least one `lowercase` character.
+- dcredit=-1 : must have at least `one digit`
+- difok=3 : The number of characters in the new password that must not have been present in the old password.
+- gecoscheck=1: Words in the GECOS field of the user’s passwd entry are not contained in the new password.
+- reject_username: Rejects the password if contains the name of the user in either straight or reversed form.
+- enforce_for_root: Enforce pasword policy for root user
 
 4.	**Edit common-auth File:**
 
