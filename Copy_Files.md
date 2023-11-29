@@ -66,3 +66,26 @@ x="test\ me"
 eval cd $x
 ```
 
+## Additionally, if you want to log the filename and timestamp of the copy operation to a log file:
+
+```bash
+#!/bin/bash
+
+source_dir="/source_directory"
+dest_dir="/destination_directory"
+log_file="/var/log/file_copy.log"  # Path to the log file
+
+# Move to the source directory
+cd "$source_dir" || exit
+
+# Find the latest file and copy it to the destination
+latest_file=$(find . -maxdepth 1 -type f -name "*report*" -printf "%T@\t%p\n" | sort -n | tail -1 | cut -f2-)
+if [ -n "$latest_file" ]; then
+    cp -u "$latest_file" "$dest_dir"
+    echo "$(date '+%Y-%m-%d %H:%M:%S') - Copied file: $latest_file" >> "$log_file"
+else
+    echo "$(date '+%Y-%m-%d %H:%M:%S') - No file found to copy" >> "$log_file"
+fi
+
+```
+This script will copy the latest file (based on modification time) matching the pattern "report" from the source directory to the destination directory. Additionally, it logs the filename and timestamp of the copy operation to a log file specified by log_file. Adjust the paths and settings as needed for your specific environment.
