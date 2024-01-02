@@ -32,19 +32,24 @@ sudo adduser jonsmith
 ```bash
 sudo passwd -d jonsmith
 ```
-4. Switch to the new user:
+4. Set password expiry date to Never:
+
+```bash
+sudo chage -I -1 -m 0 -M 99999 -E -1 jonsmith
+```
+5. Switch to the new user:
 
 ```bash
 su - jonsmith
 ```
-5. Create the necessary directory and file:
+6. Create the necessary directory and file:
 
 ```bash
 mkdir ~/.ssh
 vi ~/.ssh/authorized_keys
 ```
-6. Open the `authorized_keys` file and paste the retrieved public key in a single line.
-7. Set appropriate permissions:
+7. Open the `authorized_keys` file and paste the retrieved public key in a single line.
+8. Set appropriate permissions:
 
 ```bash
 chmod 700 ~/.ssh
