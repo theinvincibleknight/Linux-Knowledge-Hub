@@ -174,9 +174,9 @@ Create a bash script by adding the commands you run manually.
 #!/bin/sh
 
 ip route add 20.0.140.21 dev ens5 scope link
-ip route add 151.193.250.41 via 20.0.140.21 dev ens5
-ip route add 151.193.250.40 via 20.0.140.21 dev ens5
-ip route add 151.193.250.20 via 20.0.140.21 dev ens5
+ip route add 151.193.250.80 via 20.0.140.21 dev ens5
+ip route add 151.193.250.81 via 20.0.140.21 dev ens5
+ip route add 151.193.250.82 via 20.0.140.21 dev ens5
 ```
 
 Save the bash script with `.sh` extention. For example, `route_table.sh`. And provide executable permission using `chmod +x` command.
