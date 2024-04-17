@@ -85,6 +85,18 @@ vi `/etc/logrotate.d/suricata`
 
 ```
 /var/log/suricata/*.log
+{
+        rotate 14
+        size 10M
+        missingok
+        compress
+        copytruncate
+        sharedscripts
+        postrotate
+                /bin/kill -HUP $(cat /var/run/suricata.pid)
+        endscript
+}
+
 /var/log/suricata/*.json
 {
         rotate 14
