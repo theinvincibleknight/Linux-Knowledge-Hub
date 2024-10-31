@@ -23,6 +23,16 @@ curl -s -L -H "Accept: application/vnd.github+json" \
   grep '"full_name"' | sed 's/.*"full_name": "\(.*\)".*/\1/'
 ```
 
+If repositories are more than 100, you can use `per_page=200&page=2`
+
+```bash
+curl -s -L -H "Accept: application/vnd.github+json" \
+  -H "Authorization: Bearer YOUR_TOKEN" \
+  -H "X-GitHub-Api-Version: 2022-11-28" \
+  "https://api.github.com/orgs/Admin-Air/repos?type=all&per_page=200&page=2" | \
+  grep '"full_name"' | sed 's/.*"full_name": "\(.*\)".*/\1/'
+```
+
 ### 1.3 Output Format
 The command will output the repository names in the following format:
 
