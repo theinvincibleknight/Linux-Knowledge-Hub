@@ -198,3 +198,65 @@ grep -i "password" *.txt > password_found.txt
 
 - This command searches for the string "password" (case insensitive due to the `-i` option) in all `.txt` files in the current directory.
 - The results are redirected to a file named `password_found.txt`, which will contain all occurrences of the string across the output files.
+
+---
+
+### Step 3 Alternative:
+
+After Step 2 (cloning the GitHub repository), if you want to search for a particular string, you can use the following script. Copy the script in the cloned repository directory.
+
+```bash
+vi code-locate-string.sh
+```
+
+```bash
+#!/bin/bash
+# This script must be run in the same directory that contains all the cloned repositories.
+#
+# Function to search for "password" in all remote branches of a Git repository
+search_in_git_repo() {
+    # Fetch the latest branches and commits
+    git fetch --all
+
+    # Iterate over each remote branch
+    for branch in $(git branch -r | awk '{print $1}'); do
+        # Strip the remote name (e.g., 'origin/')
+        branch_name=${branch#origin/}
+
+        echo "#########################"
+        echo "Branch: $branch_name"
+
+        # Perform the grep search
+        results=$(git grep -i "password" $(git rev-parse "$branch") | grep -vi "passwords" | grep -vi "ipassword" | grep -vi "keypassword")
+
+        # Check if results were found and output accordingly
+        if [ -n "$results" ]; then
+            echo "Path: $PWD Branch: $branch_name" >> ../results.log
+            echo "$results" >> ../results.log
+            echo "$results"
+        else
+            echo "No matches found."
+        fi
+    done
+}
+
+# Iterate through all directories in the current directory
+for dir in */; do
+    echo "Entering directory: $dir"
+
+    cd "$dir" || continue  # Change to the directory or skip if it fails
+
+    # Check if it is a Git repository
+    if [ -d .git ]; then
+        echo "Found Git repository in: $dir"
+        search_in_git_repo
+    else
+        echo "No Git repository found in: $dir"
+    fi
+
+    cd ..  # Return to the parent directory
+done
+```
+
+This script searches for the string "password" and uses `grep -vi` to ignore other strings that contain "password" in them. And saves the output **results.log** in the same directory.
+
