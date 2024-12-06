@@ -1,6 +1,6 @@
 # SMTP Configuration: Using Office 365 Email Account with Postfix Relay on Ubuntu
 
-Steps to configure Postfix to send emails using an Office 365 email account on an Ubuntu server.
+Postfix is a popular mail transfer agent (MTA) that is used to send and receive emails on a Unix or Linux system. Here's a step-by-step guide on how to install and configure Postfix to send emails using an Office 365 email account on Ubuntu 22.04:
 
 ## Prerequisites
 
