@@ -56,7 +56,9 @@ backend sftp_backend
 Replace `<SFTP_SERVER_1_IP>` and `<SFTP_SERVER_2_IP>` with the actual IP addresses of your SFTP servers. You can add more servers as needed.
 
 Basic Example:
-
+```bash
+vi GOKUDRGBL-sftp.cfg
+```
 ```haproxy
 listen frontend_GOKUDRGBL_sftp
         bind *:2225
@@ -65,6 +67,15 @@ listen frontend_GOKUDRGBL_sftp
         option tcplog
         server GOKUDRGBL 88.202.130.64:22
 ```
+To start HAProxy with specific configuration
+```bash
+haproxy -D -f GOKUDRGBL-sftp.cfg
+```
+- `haproxy`: This is the command to run the HAProxy application.
+- `-D:` This option tells HAProxy to run in "daemon" mode. When HAProxy runs in daemon mode, it runs in the background as a service. This is useful for production environments where you want HAProxy to continuously run and manage traffic without being tied to a terminal session.
+- `-f` GOKUDRGBL-sftp.cfg: The -f option specifies the configuration file that HAProxy should use. In this case, GOKUDRGBL-sftp.cfg is the name of the configuration file that contains the settings for HAProxy, including frontend and backend definitions, logging options, and other parameters.
+
+If you want to run HAProxy with a specific configuration file for testing or development purposes, you might use this command to see how it behaves with that configuration.
 
 ### Step 4: Enable HAProxy
 After configuring HAProxy, enable it to start on boot and start the service:
