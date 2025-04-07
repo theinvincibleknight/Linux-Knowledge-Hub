@@ -7,10 +7,12 @@ Steps to scan all branches of GitHub repositories for a specific string, using G
 ### 1.1 Create a GitHub Token
 Before you can access the repositories, you need to create a personal access token in GitHub. This token will allow you to authenticate and interact with the GitHub API.
 
-1. Go to your GitHub account settings.
-2. Navigate to **Developer settings** > **Personal access tokens**.
-3. Click on **Generate new token** and select the appropriate scopes (e.g., `repo` for full control of private repositories).
-4. Copy the generated token.
+1. Go to your GitHub account **settings**.
+2. Navigate to **Developer settings** > **Personal access tokens** > **Tokens (Classic)**
+3. Select **Generate new token (classic).**
+4. In **Select scopes**, select the appropriate scopes (e.g., repo for full control of private repositories).
+5. Click on **Generate token**.
+6. Copy the generated token.
 
 ### 1.2 Fetch Repository Names
 Run the following command to fetch all the GitHub repository names associated with your organization:
