@@ -175,4 +175,13 @@ sleep 10
 # Remove port 80 from the security group
 remove_port_80
 ```
+---
+To check the certificate validity:
+```bash
+sudo openssl x509 -in /etc/letsencrypt/live/domain.com/fullchain.pem -noout -dates
+```
 
+To update the email:
+```bash
+sudo certbot update_account --email akshay.hegde@gmail.com
+```
