@@ -128,3 +128,51 @@ Save and exit the configuration file.
 That's it! With these steps, Certbot will automatically attempt to renew the SSL certificate for `contracts.company.com` every day at 3:00 AM. If the renewal is successful, the new certificate will be automatically installed and configured for your web server.
 
 Note that you may need to adjust the cron job schedule and email settings based on your specific requirements and preferences. Additionally, ensure that your web server configuration is set up to use the renewed certificates automatically.
+
+---
+
+## Extras
+
+For certificate renewal, we need to open port 80 in the inbound rules of the Security Group attached to the instance. This is necessary during the renewal process, and once the activation is complete, we will need to remove that rule. We can use the following bash script on the same instance and set a cron job to run this script every month for renewal.
+
+```bash
+#!/bin/bash
+
+SECURITY_GROUP_ID="sg-0652edba917fd87d7"
+INSTANCE_ID="i-034990c6d56d84ad0"
+REGION="ap-south-1"
+
+# Function to add port 80 to the security group
+add_port_80() {
+    aws ec2 authorize-security-group-ingress --group-id $SECURITY_GROUP_ID --protocol tcp --port 80 --cidr 0.0.0.0/0 --region $REGION
+}
+
+# Function to remove port 80 from the security group
+remove_port_80() {
+    aws ec2 revoke-security-group-ingress --group-id $SECURITY_GROUP_ID --protocol tcp --port 80 --cidr 0.0.0.0/0 --region $REGION
+}
+
+# Adding port 80 to the security group
+add_port_80
+
+sleep 10
+
+# Stop Apache, renew the certificate, and start Apache
+sudo systemctl stop apache2
+sudo certbot renew
+sleep 5
+sudo systemctl start apache2
+
+# Check if the certificate was renewed successfully
+if sudo certbot certificates | grep -q "VALID"; then
+    echo "Certificate renewed successfully."
+else
+    echo "Certificate renewal failed."
+fi
+
+sleep 10
+
+# Remove port 80 from the security group
+remove_port_80
+```
+
