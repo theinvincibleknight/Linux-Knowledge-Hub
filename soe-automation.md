@@ -161,26 +161,20 @@ log "SOE steps completed."
 
 ## Usage
 
-1. Clone the Repository
-
-```sh
-git clone https://github.com/your-repo-name/soe-automation-script.git
-cd soe-automation-script
-```
-
-2. Make the Script Executable
+1. Make the Script Executable
 ```sh
 chmod +x soe.sh
 ```
 
-3. Run the Script
+2. Run the Script
 ```sh
 sudo bash ./soe.sh
 ```
 
 > Note: Ensure you have sudo privileges to execute the script.
 
-4. Logging
+3. Logging:
+   
 The script maintains a log file at:
 ```sh
 /var/log/soe_script.log
