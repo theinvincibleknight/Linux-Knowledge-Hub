@@ -64,3 +64,16 @@ Check the new size:
 ```bash
 df -h /
 ```
+
+---
+
+Example:
+
+```bash
+df -hT
+lsblk
+sudo growpart /dev/nvme0n1 1
+lsblk
+sudo resize2fs /dev/nvme0n1p1
+df -hT
+```
